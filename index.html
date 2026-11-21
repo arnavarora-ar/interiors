@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ecomind Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE occasion: cinematic and hushed, an architecture studio that lets the space speak
+   IDEA a one-take FPV drone flight: scrolling is the throttle, the page is the flight path from street to stairwell
+   PICTURE the pinned full-screen film, scrubbed frame by frame, with chapter titles rising over it
+   COLOUR warm charcoal at night, limestone by day for the service band, moss as the one brand mark
+   TYPE Instrument Serif display + Manrope text
+   LAYOUT film fills the screen, chapter text bottom-left, chapter rail bottom-right; below, alternating dark and limestone bands */
+:root{color-scheme:dark;--bg:#0e0d0b;--bg2:#171512;--ink:#efe9df;--mute:#aaa398;--lime:#eeeae2;--dark:#1a1916;--moss:#8fb36a;--line:#2c2924}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Manrope,system-ui,sans-serif;overflow-x:clip}
+a{color:inherit}
+img{max-width:100%;display:block}
+h1,h2,h3{font-family:"Instrument Serif",Georgia,serif;font-weight:400;line-height:1.04;letter-spacing:-.01em;margin:0;text-wrap:balance}
+h2{font-size:clamp(38px,5vw,64px)}
+h3{font-size:30px}
+p{margin:0}
+.band{padding:clamp(64px,9vw,140px) max(5vw,16px)}
+.wrap{max-width:1240px;margin:0 auto}
+.mute{color:var(--mute)}
+.small{font-size:13px;color:var(--mute)}
+nav{position:fixed;inset:0 0 auto;z-index:30;display:flex;align-items:center;gap:10px 28px;padding:16px max(5vw,16px);transition:background .4s}
+nav.solid{background:#0e0d0bd9;backdrop-filter:blur(10px)}
+nav .logo{font-family:"Instrument Serif",serif;font-size:26px;text-decoration:none;margin-right:auto;display:flex;align-items:center;gap:10px;white-space:nowrap}
+nav .links{display:flex;gap:22px;font-size:15px}
+nav .links a{text-decoration:none;color:#d8d2c8;padding:8px 0}
+nav .links a:hover{color:#fff}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 22px;border-radius:999px;background:var(--ink);color:#12110f;font:700 15px Manrope,sans-serif;text-decoration:none;border:0;cursor:pointer;white-space:nowrap;transition:transform .2s}
+.btn:hover{transform:translateY(-2px)}
+.btn.ghost{background:#0e0d0b55;color:var(--ink);border:1px solid #efe9df66;backdrop-filter:blur(6px)}
+:focus-visible{outline:2px solid var(--moss);outline-offset:3px}
+/* film */
+.flight{position:relative;height:1000vh}
+.stage{position:sticky;top:0;height:100svh;overflow:hidden;background:#000}
+#film{position:absolute;inset:0;width:100%;height:100%}
+.shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#000a 0%,#0004 40%,#0000 65%),linear-gradient(0deg,#000b 0%,#0000 35%),linear-gradient(#0008 0%,#0000 18%)}
+.chap{position:absolute;left:max(5vw,16px);bottom:clamp(92px,14vh,150px);max-width:620px;pointer-events:none}
+.chap.on{pointer-events:auto}
+.chap .ln{display:block;overflow:hidden}
+.chap .ln>span{display:block;transform:translateY(105%);transition:transform .9s cubic-bezier(.2,.7,.1,1)}
+.chap.on .ln>span{transform:none}
+.chap .ln:nth-child(2)>span{transition-delay:.08s}.chap .ln:nth-child(3)>span{transition-delay:.16s}
+.chap h1{font-size:clamp(48px,7vw,104px)}
+.chap h2{font-size:clamp(40px,5.4vw,76px)}
+.chap p,.chap .row{opacity:0;transform:translateY(14px);transition:opacity .7s .25s,transform .7s .25s}
+.chap.on p,.chap.on .row{opacity:1;transform:none}
+.chap p{margin-top:18px;font-size:18px;color:#e2ddd4;max-width:480px}
+.chap .row{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
+.rail{position:absolute;right:max(5vw,16px);bottom:26px;display:flex;align-items:center;gap:2px}
+.rail button{background:none;border:0;color:#cfc8bd99;font:500 14px Manrope,sans-serif;min-height:44px;padding:0 10px;cursor:pointer}
+.rail button.on{color:#fff}
+.bar{position:absolute;left:0;right:0;bottom:0;height:3px;background:#ffffff1a}
+.bar i{display:block;height:100%;width:0;background:var(--moss)}
+.load{position:absolute;right:max(5vw,16px);top:84px;font-size:13px;color:#d8d2c8;transition:opacity .6s}
+.hint{position:absolute;left:50%;bottom:30px;translate:-50% 0;font-size:13px;color:#d8d2c8;display:flex;flex-direction:column;align-items:center;gap:8px;transition:opacity .5s}
+.hint i{width:1px;height:34px;background:linear-gradient(#fff,#fff0);animation:drop 1.8s infinite}
+@keyframes drop{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+/* reveal */
+.js .rv{opacity:0;transform:translateY(40px);transition:opacity 1s,transform 1s cubic-bezier(.2,.7,.1,1)}
+.js .rv.in{opacity:1;transform:none}
+/* intro */
+.intro{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:clamp(32px,6vw,96px);align-items:end}
+.intro h2{font-size:clamp(34px,4.4vw,58px)}
+.princ{display:grid;gap:24px}
+.princ div{border-top:1px solid var(--line);padding-top:16px}
+.princ b{display:block;margin-bottom:4px}
+/* services: limestone band */
+.day{background:var(--lime);color:var(--dark)}
+.day .mute{color:#5f5a51}
+.svc{display:grid;gap:clamp(48px,7vw,110px);margin-top:56px}
+.s{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(28px,5vw,80px);align-items:center}
+.s:nth-child(even) .ph{order:2}
+.ph{position:relative;overflow:hidden;border-radius:4px;aspect-ratio:4/3;background:#2a2620}
+.ph img{position:absolute;left:0;top:-12%;width:100%;height:124%;object-fit:cover;will-change:transform}
+.s ul{margin:18px 0 0;padding:0;list-style:none;color:#5f5a51}
+.s li{padding:8px 0;border-top:1px solid #d6d0c4}
+.s h3{font-size:clamp(32px,3.6vw,46px);margin-bottom:14px}
+/* horizontal gallery */
+.hz{position:relative;height:340vh}
+.hz .pin{position:sticky;top:0;height:100svh;overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:28px}
+.hz .head{padding:0 max(5vw,16px);display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap}
+.track{display:flex;gap:clamp(16px,2vw,28px);padding:0 max(5vw,16px);will-change:transform}
+.card{flex:none;width:min(62vw,820px)}
+.card .ph{aspect-ratio:16/10}
+.card .ph img{top:0;height:100%;left:-8%;width:116%}
+.card .cap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;margin-top:12px;color:var(--mute);font-size:15px}
+.card .cap b{color:var(--ink);font-weight:500}
+/* materials */
+.mats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));min-height:340px}
+.mat{padding:22px 18px;display:flex;flex-direction:column;justify-content:flex-end;gap:4px;color:#141210;position:relative;overflow:hidden}
+.mat b{font-family:"Instrument Serif",serif;font-weight:400;font-size:26px;line-height:1.1;position:relative}
+.mat span{font-size:14px;position:relative}
+.mat.pic{color:#fff}.mat.pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.7)}
+/* process */
+.route{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;margin-top:56px;position:relative}
+.route::before{content:"";position:absolute;left:0;right:0;top:11px;height:1px;background:var(--line)}
+.route .fill{position:absolute;left:0;top:11px;height:1px;background:var(--moss);width:0;transition:width 1.6s ease}
+.route.in .fill{width:100%}
+.stop{position:relative;padding-top:44px}
+.stop::before{content:"";position:absolute;left:0;top:0;width:22px;height:22px;border-radius:50%;background:var(--bg);border:1px solid var(--moss)}
+.stop p{color:var(--mute);font-size:15px;margin-top:8px}
+.stop .wk{display:block;margin-top:10px;font-size:13px;color:var(--moss)}
+/* contact */
+.contact{position:relative;overflow:hidden}
+.contact>img{position:absolute;inset:-10% 0;width:100%;height:120%;object-fit:cover;opacity:.32;will-change:transform}
+.contact .wrap{position:relative}
+.cgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(32px,6vw,96px);align-items:start}
+.cgrid h2{font-size:clamp(44px,6vw,84px)}
+.cinfo{margin-top:28px;display:grid;gap:12px}
+form{display:grid;gap:16px;background:#0e0d0bcc;padding:clamp(18px,3vw,32px);border-radius:6px;backdrop-filter:blur(8px)}
+label{display:grid;gap:6px;font-size:14px;color:var(--mute)}
+input,select,textarea{font:16px Manrope,sans-serif;color:var(--ink);background:#0e0d0b;border:1px solid #3d3830;border-radius:6px;padding:12px 14px;min-height:48px;width:100%}
+textarea{min-height:110px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--moss)}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.note{display:none;padding:14px 16px;border-radius:6px;background:#24301f;font-size:15px}
+.note.show{display:block}
+footer{padding:32px max(5vw,16px);display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-between;color:var(--mute);font-size:14px;border-top:1px solid var(--line)}
+@media(max-width:900px){.mats{grid-template-columns:repeat(3,minmax(0,1fr))}.mat{min-height:170px}}
+@media(max-width:700px){
+nav .links{display:none}
+nav .logo{font-size:22px;gap:8px}
+nav .btn{min-height:44px;padding:0 14px;font-size:14px}
+.shade{background:linear-gradient(0deg,#000e 0%,#000a 36%,#0000 62%),linear-gradient(#0009 0%,#0000 16%)}
+.chap{right:16px;bottom:86px}
+.chap p{font-size:16px}
+.rail{left:4px;right:4px;justify-content:space-between}
+.rail button{padding:0 6px;font-size:13px}
+.hint{display:none}
+.intro,.cgrid,.s{grid-template-columns:minmax(0,1fr)}
+.s:nth-child(even) .ph{order:0}
+.card{width:82vw}
+.mats{grid-template-columns:repeat(2,minmax(0,1fr))}
+.route{grid-template-columns:minmax(0,1fr);gap:28px}.route::before,.route .fill{left:11px;right:auto;top:0;bottom:0;width:1px;height:auto}.route .fill{height:0;transition:height 1.6s}.route.in .fill{height:100%;width:1px}
+.stop{padding:0 0 0 44px}
+.two{grid-template-columns:minmax(0,1fr)}
+}
+@media(prefers-reduced-motion:reduce){.js .rv{opacity:1;transform:none}.chap .ln>span,.chap p,.chap .row{transition:none}.hint i{animation:none}}
+</style>
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+<nav id="nav" aria-label="Main">
+  <a class="logo" href="#top"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M11 2C5 6 3 12 6 18c5 0 10-3 11-9 .3-2-.2-4.5-6-7Z" fill="#8fb36a"/><path d="M6 18 15 7" stroke="#0e0d0b" stroke-width="1.4"/></svg>Ecomind Studio</a>
+  <div class="links"><a href="#approach">Approach</a><a href="#services">Services</a><a href="#spaces">Spaces</a><a href="#process">Process</a></div>
+  <a class="btn" href="#contact">Start a project</a>
+</nav>
+
+<section class="flight" id="top" aria-label="Scroll-driven drone flight through a home">
+  <div class="stage">
+    <canvas id="film" aria-label="Drone flight from the street, across the terrace and through the house"></canvas>
+    <div class="shade"></div>
+    <div class="chap on" data-a="0" data-b=".11">
+      <h1><span class="ln"><span>Homes drawn</span></span><span class="ln"><span>from the land</span></span><span class="ln"><span>they stand on</span></span></h1>
+      <p>Ecomind Studio designs sustainable architecture and interiors: buildings that use less, breathe better and feel calm to live in.</p>
+      <div class="row"><a class="btn" href="#contact">Book a consultation</a><a class="btn ghost" href="#approach">Our approach</a></div>
+    </div>
+    <div class="chap" data-a=".14" data-b=".25">
+      <h2><span class="ln"><span>Every line starts</span></span><span class="ln"><span>with sun, view and site</span></span></h2>
+      <p>We read how light, wind and the slope of your plot behave before drawing a single wall.</p>
+    </div>
+    <div class="chap" data-a=".28" data-b=".47">
+      <h2><span class="ln"><span>Spaces built</span></span><span class="ln"><span>around daylight</span></span></h2>
+      <p>Glass where the view is, solid where the heat is. Rooms that need less light and less cooling.</p>
+    </div>
+    <div class="chap" data-a=".51" data-b=".72">
+      <h2><span class="ln"><span>Rooms that open</span></span><span class="ln"><span>to the horizon</span></span></h2>
+      <p>Interiors planned with the architecture, so every floor, stair and window frames the landscape.</p>
+    </div>
+    <div class="chap" data-a=".77" data-b="1.1">
+      <h2><span class="ln"><span>Light, layered</span></span><span class="ln"><span>like a landscape</span></span></h2>
+      <p>From the first sketch to the last fitting, we design the whole experience of a home.</p>
+      <div class="row"><a class="btn" href="#contact">Start your project</a></div>
+    </div>
+    <div class="load" id="load">Loading flight 0%</div>
+    <div class="hint" id="hint">Scroll to fly<i></i></div>
+    <div class="rail" id="rail"></div>
+    <div class="bar"><i id="bar"></i></div>
+  </div>
+</section>
+
+<section class="band" id="approach">
+  <div class="wrap intro">
+    <h2 class="rv">We start with sun, wind, soil and the way you live, and let the building follow.</h2>
+    <div class="princ">
+      <div class="rv"><b>Passive first</b><span class="mute">Orientation, shade and cross-ventilation before air-conditioning.</span></div>
+      <div class="rv"><b>Honest materials</b><span class="mute">Lime, timber, earth and stone that are local, low-carbon and repairable.</span></div>
+      <div class="rv"><b>Interiors that breathe</b><span class="mute">Daylight, clean air and natural finishes, planned with the shell.</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="band day" id="services">
+  <div class="wrap">
+    <h2 class="rv">What we design</h2>
+    <div class="svc" id="svc"></div>
+  </div>
+</section>
+
+<section class="hz" id="spaces" aria-label="Spaces">
+  <div class="pin">
+    <div class="head"><h2>Spaces, frame by frame</h2><p class="small">Stills from the film above</p></div>
+    <div class="track" id="track"></div>
+  </div>
+</section>
+
+<section class="mats" aria-label="Material palette" id="mats"></section>
+
+<section class="band" id="process">
+  <div class="wrap"><h2 class="rv">From first sketch to handover</h2><div class="route rv" id="route"><span class="fill"></span></div></div>
+</section>
+
+<section class="band contact" id="contact">
+  <img src="img/s236.webp" alt="" id="cbg">
+  <div class="wrap cgrid">
+    <div class="rv">
+      <h2>Let's design something that lasts</h2>
+      <p class="mute" style="margin-top:18px;max-width:440px">Tell us about your site, your plans and your budget, and we'll set up a first conversation.</p>
+      <div class="cinfo"><span>Instagram: <a href="https://www.instagram.com/ecomind_studio/">@ecomind_studio</a></span><span class="small">Email and phone to be added</span></div>
+    </div>
+    <form id="form" class="rv" novalidate>
+      <div class="two">
+        <label for="f-name">Your name<input id="f-name" autocomplete="name"></label>
+        <label for="f-contact">Email or phone<input id="f-contact"></label>
+      </div>
+      <div class="two">
+        <label for="f-type">Project type<select id="f-type"><option>New home</option><option>Renovation</option><option>Interiors</option><option>Landscape</option><option>Commercial space</option></select></label>
+        <label for="f-when">Timeline<select id="f-when"><option>Within 3 months</option><option>3 to 6 months</option><option>6 to 12 months</option><option>Just exploring</option></select></label>
+      </div>
+      <label for="f-msg">About the project<textarea id="f-msg" placeholder="Site location, size, what matters most to you"></textarea></label>
+      <div><button class="btn" type="submit">Send enquiry</button></div>
+      <div class="note" id="note" role="status"></div>
+    </form>
+  </div>
+</section>
+
+<footer><span>© 2026 Ecomind Studio</span><span>Concept site. Film is a third-party FPV tour of a house in Stuttgart, not an Ecomind project.</span><a href="https://www.instagram.com/ecomind_studio/">Instagram</a></footer>
+
+<script>
+{
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const cl=v=>Math.max(0,Math.min(1,v));
+/* ---------- content ---------- */
+const services=[["Architecture","New homes planned around climate: orientation, thermal mass, rainwater and solar designed in from the first sketch.",["Site and climate study","Concept to construction drawings","Approvals support"],"s15"],
+["Interiors","Calm, natural interiors with daylight, healthy finishes and furniture made to fit.",["Space planning","Material selection","Custom joinery"],"s53"],
+["Lighting","Layered light that follows the day, from warm evening scenes to statement pieces over a stairwell.",["Daylight studies","Lighting plans","Fixture selection"],"s73"],
+["Landscape","Terraces, native planting and living roofs that cool the house and frame the view.",["Planting plans","Terraces and courtyards","Green roofs"],"s236"]];
+document.getElementById('svc').innerHTML=services.map(([n,d,l,img])=>`<article class="s rv"><div class="ph"><img src="img/${img}.webp" alt="" loading="lazy" data-par></div><div><h3>${n}</h3><p class="mute">${d}</p><ul>${l.map(x=>`<li>${x}</li>`).join('')}</ul></div></article>`).join('');
+const spaces=[["s31","Kitchen","Stone island under evening light"],["s46","Stair","Floating oak treads, glass balustrade"],["s195","Living","Dining open to the valley"],["s189","Screen","Carved lattice for light and privacy"],["s153","Bath","Vanity facing the sunset"]];
+document.getElementById('track').innerHTML=spaces.map(([i,n,d])=>`<figure class="card" style="margin:0"><div class="ph"><img src="img/${i}.webp" alt="${n}: ${d}" loading="lazy" data-hz></div><figcaption class="cap"><b>${n}</b><span>${d}</span></figcaption></figure>`).join('');
+const mats=[["Lime plaster","Breathable walls","#e4ddcc"],["Oak","Warm, repairable floors","#a9774a"],["Rammed earth","Thermal mass","#c69a72"],["Kota stone","Cool, local floors","#8e9a8c"],["Living roof","Shade and habitat","#7f9f5c"]];
+document.getElementById('mats').innerHTML=mats.map(([n,d,c])=>`<div class="mat" style="background:${c}"><b>${n}</b><span>${d}</span></div>`).join('')+`<div class="mat pic"><img src="img/s189.webp" alt="" loading="lazy"><b>Carved screens</b><span>Light without glare</span></div>`;
+const steps=[["Listen","Site visit, brief, budget and how you want to live.","Weeks 1 to 2"],["Concept","Sun and wind studies, massing options and a first look at materials.","Weeks 3 to 6"],["Develop","Detailed drawings, interiors, approvals and contractor selection.","Weeks 7 to 16"],["Build","Site visits through construction, through to handover.","Project dependent"]];
+document.getElementById('route').insertAdjacentHTML('beforeend',steps.map(([n,d,w])=>`<div class="stop"><h3>${n}</h3><p>${d}</p><span class="wk">${w}</span></div>`).join(''));
+const form=document.getElementById('form'),note=document.getElementById('note');
+form.addEventListener('submit',e=>{e.preventDefault();const n=form['f-name'].value.trim(),c=form['f-contact'].value.trim();note.classList.add('show');note.textContent=(!n||!c)?'Please add your name and an email or phone number.':`Thanks, ${n}. This form isn't connected to an inbox yet, so please also message us on Instagram at @ecomind_studio.`});
+
+/* ---------- reveal on scroll ---------- */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.15});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+/* ---------- film frames ---------- */
+const N=560,PER=8,S=Math.ceil(N/PER),sheets=new Array(S),ok=new Uint8Array(N);
+const cv=document.getElementById('film'),ctx=cv.getContext('2d');
+let loaded=0;const loadEl=document.getElementById('load');
+const pad=i=>String(i+1).padStart(3,'0');
+const order=[];const seen=new Uint8Array(S);for(const step of[8,4,2,1])for(let i=0;i<S;i+=step)if(!seen[i]){seen[i]=1;order.push(i)}
+let q=0;function next(){if(q>=order.length)return;const k=order[q++];const im=new Image();im.decoding='async';im.onload=()=>{sheets[k]=im;for(let j=0;j<PER;j++)if(k*PER+j<N)ok[k*PER+j]=1;loaded++;need=true;loadEl.textContent=loaded<S?`Loading flight ${Math.round(loaded/S*100)}%`:'';if(loaded>=S)loadEl.style.opacity=0;next()};im.onerror=next;im.src=`strip/s${pad(k)}.webp`}
+for(let k=0;k<4;k++)next();
+function nearest(i){if(ok[i])return i;for(let d=1;d<N;d++){if(i-d>=0&&ok[i-d])return i-d;if(i+d<N&&ok[i+d])return i+d}return -1}
+let W=0,H=0;function size(){const d=Math.min(devicePixelRatio||1,2);W=cv.width=Math.round(cv.clientWidth*d);H=cv.height=Math.round(cv.clientHeight*d);need=true}
+const ro=new ResizeObserver(size);ro.observe(cv);
+function draw(fi,a){const img=sheets[Math.floor(fi/PER)],iw=img.naturalWidth,ih=img.naturalHeight/PER,s=Math.max(W/iw,H/ih),w=iw*s,h=ih*s;ctx.globalAlpha=a;ctx.drawImage(img,0,(fi%PER)*ih,iw,ih,(W-w)/2,(H-h)/2,w,h)}
+/* ---------- scroll state ---------- */
+const flight=document.getElementById('top'),chaps=[...document.querySelectorAll('.chap')],bar=document.getElementById('bar'),hint=document.getElementById('hint'),nav=document.getElementById('nav');
+const names=[['Arrive',0],['Terrace',.16],['Kitchen',.32],['Living',.55],['Light',.84]];
+const rail=document.getElementById('rail');rail.innerHTML=names.map(([n],i)=>`<button type="button" data-i="${i}">${n}</button>`).join('');
+const rb=[...rail.children];
+rail.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const p=names[b.dataset.i][1];scrollTo({top:flight.offsetTop+p*(flight.offsetHeight-innerHeight),behavior:reduce?'auto':'smooth'})});
+const par=[...document.querySelectorAll('[data-par]')],hzImgs=[...document.querySelectorAll('[data-hz]')];
+const hz=document.getElementById('spaces'),track=document.getElementById('track'),cbg=document.getElementById('cbg');
+let target=0,cur=0,need=true,lastF=-1;
+function onScroll(){target=cl((scrollY-flight.offsetTop)/(flight.offsetHeight-innerHeight));need=true;
+ nav.classList.toggle('solid',scrollY>flight.offsetTop+flight.offsetHeight-innerHeight-10);
+ const vh=innerHeight;
+ for(const im of par){const r=im.parentElement.getBoundingClientRect();if(r.bottom<0||r.top>vh)continue;const t=(r.top+r.height/2-vh/2)/vh;im.style.transform=`translateY(${(-t*10).toFixed(2)}%)`}
+ const hr=hz.getBoundingClientRect(),span=hz.offsetHeight-vh;
+ if(hr.top<vh&&hr.bottom>0){const hp=cl(-hr.top/span);const max=track.scrollWidth-innerWidth;track.style.transform=`translateX(${(-hp*Math.max(0,max)).toFixed(1)}px)`;hzImgs.forEach((im,i)=>im.style.transform=`translateX(${((hp*5-i)*-3).toFixed(2)}%)`)}
+ const cr=cbg.parentElement.getBoundingClientRect();if(cr.top<vh&&cr.bottom>0)cbg.style.transform=`translateY(${((cr.top/vh)*8).toFixed(2)}%)`;
+}
+addEventListener('scroll',onScroll,{passive:true});addEventListener('resize',onScroll);onScroll();
+function tick(){
+ requestAnimationFrame(tick);
+ const d=target-cur;
+ if(Math.abs(d)>.00005){cur+=reduce?d:d*.12;need=true}
+ if(!need||!W)return;need=false;
+ const f=cur*(N-1),i0=Math.floor(f),t=f-i0;
+ const a=nearest(i0),b=nearest(Math.min(N-1,i0+1));
+ if(a<0)return;
+ ctx.globalAlpha=1;draw(a,1);if(b>=0&&b!==a&&t>.02)draw(b,t);
+ const p=cur;
+ chaps.forEach(c=>c.classList.toggle('on',p>=+c.dataset.a&&p<+c.dataset.b));
+ let ci=0;names.forEach((n,i)=>{if(p>=n[1]-.08)ci=i});rb.forEach((b,i)=>b.classList.toggle('on',i==ci));
+ bar.style.width=(p*100).toFixed(2)+'%';hint.style.opacity=p>.02?0:1;
+}
+requestAnimationFrame(tick);
+}
+</script>
+</body>
+</html>
